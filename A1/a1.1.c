@@ -71,21 +71,30 @@ bool is_sorted(int data[], int size) {
 }
 
 int main(int argc, char *argv[]) {
-	long size;
-
+    long size;
+    printf("starting---\n");
+    struct rlimit stack_size;
+    getrlimit(RLIMIT_STACK, &stack_size);
+    printf("Before change : cur:%ld max:%ld\n",stack_size.rlim_cur, stack_size.rlim_max);
+    
 	if (argc < 2) {
 		size = SIZE;
 	} else {
 		size = atol(argv[1]);
 	}
+    stack_size.rlim_cur = 11000000000;
+    stack_size.rlim_max = 11000000000;
+    setrlimit(RLIMIT_STACK, &stack_size);
+    //printf("After change to %ld: cur:%ld max:%ld\n",size * 2,stack_size.rlim_cur, stack_size.rlim_max);
     struct block start_block;
+    
     int data[size];
     start_block.size = size;
     start_block.first = data;
     for (int i = 0; i < size; i++) {
         data[i] = rand();
     }
-    printf("starting---\n");
+    
     merge_sort(&start_block);
     printf("---ending\n");
     printf(is_sorted(data, size) ? "sorted\n" : "not sorted\n");
